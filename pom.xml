@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.lisirrx</groupId>
+    <artifactId>fastR</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>fastR-common</module>
+        <module>fastR-serialization</module>
+        <module>fastR-example</module>
+        <module>fastR-client</module>
+        <module>fastR-server</module>
+    </modules>
+
+    <properties>
+        <projectVersion>${version}</projectVersion>
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--Inner-->
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-common</artifactId>
+                <version>${projectVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-client</artifactId>
+                <version>${projectVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-serialization</artifactId>
+                <version>${projectVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-server</artifactId>
+                <version>${projectVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-example</artifactId>
+                <version>${projectVersion}</version>
+            </dependency>
+
+
+            <!--RSocket-->
+            <dependency>
+                <groupId>io.rsocket</groupId>
+                <artifactId>rsocket-core</artifactId>
+                <version>0.11.21</version>
+            </dependency>
+            <dependency>
+                <groupId>io.rsocket</groupId>
+                <artifactId>rsocket-transport-netty</artifactId>
+                <version>0.11.21</version>
+            </dependency>
+
+
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.26</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-access</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>4.0.60</version>
+            </dependency>
+        </dependencies>
+
+
+
+    </dependencyManagement>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>11</source>
+                <target>11</target>
+            </configuration>
+        </plugin>    </plugins>
+</build>
+</project>
