@@ -67,6 +67,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
         Message message = new Message(param);
         message.setHeader(Message.SERVICE, method.getServiceName());
         message.setHeader(Message.METHOD, method.getMethodName());
+        message.setHeader(Message.IDENTITY, method.getIdentity());
         return message;
     }
 

@@ -1,5 +1,6 @@
 package me.lisirrx.fastR.client;
 
+import me.lisirrx.fastR.api.Identity;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,11 +18,13 @@ public class MethodInfo {
     private RSocketMode mode;
     private String serviceName;
     private String methodName;
+    private String identity;
 
-    public MethodInfo(Method method, String serviceName){
+    public MethodInfo(Method method, Class<?> service){
         this.mode = mode(method);
-        this.serviceName = serviceName;
+        this.serviceName = service.getName();
         this.methodName = method.getName();
+        this.identity = Identity.generate(service, method);
     }
 
     public RSocketMode getMode() {
@@ -57,4 +60,7 @@ public class MethodInfo {
         }
     }
 
+    public String getIdentity() {
+        return identity;
+    }
 }

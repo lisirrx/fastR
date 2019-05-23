@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
  * @date 2019/5/13
  */
 public interface TestService {
-      Mono<String> hi(String name);
+      Mono<People> hi(People people);
 }

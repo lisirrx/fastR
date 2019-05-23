@@ -10,6 +10,7 @@ import java.util.Map;
 public class Message{
     public final static String SERVICE = "serviceName";
     public final static String METHOD = "methodName";
+    public final static String IDENTITY = "identity";
 
 
     private Map<String, String> headers = new HashMap<>();

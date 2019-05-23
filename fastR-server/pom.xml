@@ -21,6 +21,14 @@
             <groupId>me.lisirrx</groupId>
             <artifactId>fastR-serialization</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.rsocket</groupId>
+            <artifactId>rsocket-transport-netty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.rsocket</groupId>
+            <artifactId>rsocket-core</artifactId>
+        </dependency>
     </dependencies>
 
 

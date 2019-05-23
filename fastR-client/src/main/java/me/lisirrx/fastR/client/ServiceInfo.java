@@ -23,7 +23,7 @@ public class ServiceInfo {
     public ServiceInfo(Class service){
         this.serviceName = service.getName();
         this.methods = Arrays.stream(service.getMethods())
-                .collect(Collectors.toMap(Function.identity(), method -> new MethodInfo(method, serviceName)));
+                .collect(Collectors.toMap(Function.identity(), method -> new MethodInfo(method, service)));
     }
 
     public MethodInfo getMethod(Method method){

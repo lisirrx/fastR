@@ -12,7 +12,11 @@ public class Main {
 
         RemoteServiceBuilder.initService(TestService.class, new Address("localhost", 7000));
         TestService testService = RemoteServiceBuilder.ofService(TestService.class);
-        testService.hi("li").subscribe(s -> System.out.println("Result : ========" + s));
+
+
+        People people = new People("li");
+
+        testService.hi(people).subscribe(s -> System.out.println("Result : ========" + s.getName()));
 
         Thread.sleep(3000);
     }
