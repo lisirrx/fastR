@@ -3,11 +3,8 @@ package me.lisirrx.fastR.server;
 import io.rsocket.*;
 import me.lisirrx.fastR.api.Message;
 import me.lisirrx.fastR.serialization.Codec;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.lang.reflect.Method;
 
 /**
  * @author lihan lisirrx@gmail.com
@@ -30,30 +27,61 @@ public class ServerAcceptor implements SocketAcceptor {
     }
 
 
-    private class ServerRSocket extends AbstractRSocket{
+    private class ServerRSocket extends AbstractRSocket {
+
+        @Override
+        public Mono<Void> fireAndForget(Payload payload) {
+            Message message = codec.decode(payload);
+            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
+            return Mono.defer(
+                    () -> Mono.from(
+                            invoker.invoke(message.getData())
+                    )
+            ).map(rep ->
+                    codec.encode(new Message(null, rep))
+            ).then();
+        }
+
         @Override
         public Mono<Payload> requestResponse(Payload payload) {
 
             Message message = codec.decode(payload);
             Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
+
             return Mono.defer(
-                    ()-> Mono.from(
-                            invoker.invoke(message)
+                    () -> Mono.from(
+                            invoker.invoke(message.getData())
                     )
-            ).map(rep->
+            ).map(rep ->
                     codec.encode(new Message(null, rep))
             );
         }
 
         @Override
         public Flux<Payload> requestStream(Payload payload) {
-            return super.requestStream(payload);
+            Message message = codec.decode(payload);
+            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
+            return Flux.defer(
+                    () -> invoker.invoke(message.getData())
+
+            ).map(rep ->
+                    codec.encode(new Message(null, rep))
+            );
         }
 
-        @Override
-        public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-            return super.requestChannel(payloads);
-        }
+//        @Override
+//        public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+//            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
+//            return Flux.from(payloads)
+//                    .map(payload -> codec.decode(payload))
+//
+//            return Flux.defer(
+//                    ()-> invoker.invoke(message)
+//
+//            ).map(rep->
+//                    codec.encode(new Message(null, rep))
+//            );
+//        }
 
     }
 }

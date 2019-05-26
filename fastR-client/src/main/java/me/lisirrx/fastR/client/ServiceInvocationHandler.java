@@ -3,11 +3,15 @@ package me.lisirrx.fastR.client;
 import me.lisirrx.fastR.api.Address;
 import me.lisirrx.fastR.api.Message;
 import me.lisirrx.fastR.serialization.Codec;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.Flow;
 
 /**
  * @author lihan lisirrx@gmail.com
@@ -33,33 +37,55 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Address address = serviceDiscovery.lookup(serviceInfo);
 
-        MethodInfo methodInfo = serviceInfo.getMethod(method);
+            Mono<Address> serviceAddress = serviceDiscovery.lookup(serviceInfo);
 
-        Object param = null;
-        if (args.length > 0){
-            param = args[0];
-        }
+            MethodInfo methodInfo = serviceInfo.getMethod(method);
 
-        switch (methodInfo.getMode()){
-            case FIRE_AND_FORGET:
-                break;
+            Object param = null;
+            if (args != null && args.length > 0){
+                param = args[0];
+            }
 
-            case REQUEST_RESPONSE:
-                return clientTransport.connect(address, codec)
-                        .requestAndResponse(buildMessage(param, methodInfo))
-                        .map(
-                                Message::getData
-                        )
-                        .doOnError(Throwable::printStackTrace);
-            case REQUEST_STREAM:
-                break;
+            final Object p = param;
 
-            case REQUEST_CHANNEL:
-                break;
-        }
-        return null;
+            switch (methodInfo.getMode()){
+                case FIRE_AND_FORGET:
+                    logger.info(methodInfo.toString());
+
+                    return serviceAddress.flatMap(address->
+                        clientTransport.connect(address, codec)
+                                .fireAndForget(buildMessage(p, methodInfo))
+                    );
+
+                case REQUEST_RESPONSE:
+                    return serviceAddress.flatMap(address->
+                        clientTransport.connect(address, codec)
+                                .requestAndResponse(buildMessage(p, methodInfo))
+                                .map(
+                                        Message::getData
+                                )
+                    );
+
+                case REQUEST_STREAM:
+                    return serviceAddress.flatMapMany(address->
+                            clientTransport.connect(address, codec)
+                                    .requestStream(buildMessage(p, methodInfo))
+                                    .map(
+                                            Message::getData
+                                    )
+                    );
+            //            case REQUEST_CHANNEL:
+            //                if (param.getClass().isAssignableFrom(Publisher.class)){
+            //                    return clientTransport.connect(address, codec)
+            //                            .requestChannel(Flux.just(codec.encode(buildMessage(param, methodInfo))))
+            //                            .map(Message::getData)
+            //                            .doOnError(Throwable::printStackTrace);
+            //
+            //                }
+
+            }
+            return null;
     }
 
 

@@ -20,6 +20,8 @@ public class MethodInfo {
     private String methodName;
     private String identity;
 
+    private static final String MonoVoidName = "reactor.core.publisher.Mono<java.lang.Void>";
+
     public MethodInfo(Method method, Class<?> service){
         this.mode = mode(method);
         this.serviceName = service.getName();
@@ -41,10 +43,12 @@ public class MethodInfo {
 
     private RSocketMode mode(Method method){
         Class<?> returnType = method.getReturnType();
-        if (returnType.isAssignableFrom(Void.TYPE)){
-            return RSocketMode.FIRE_AND_FORGET;
-        } else if (returnType.isAssignableFrom(Mono.class)){
+        if (returnType.isAssignableFrom(Mono.class)){
+            if (method.getGenericReturnType().getTypeName().equals(MonoVoidName)){
+                return RSocketMode.FIRE_AND_FORGET;
+            }
             return RSocketMode.REQUEST_RESPONSE;
+
         } else if (returnType.isAssignableFrom(Flux.class)){
             Class<?>[] parmTypes = method.getParameterTypes();
             boolean first =
@@ -62,5 +66,16 @@ public class MethodInfo {
 
     public String getIdentity() {
         return identity;
+    }
+
+
+    @Override
+    public String toString() {
+        return "MethodInfo{" +
+                "mode=" + mode +
+                ", serviceName='" + serviceName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", identity='" + identity + '\'' +
+                '}';
     }
 }

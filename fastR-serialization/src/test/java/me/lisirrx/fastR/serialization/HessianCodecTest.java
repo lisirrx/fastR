@@ -3,6 +3,7 @@ package me.lisirrx.fastR.serialization;
 import io.rsocket.Payload;
 import me.lisirrx.fastR.api.Message;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,5 +33,9 @@ class HessianCodecTest {
 
     @Test
     void decode() {
+
+        Mono.justOrEmpty("dsf")
+                .switchIfEmpty(Mono.just("12312"))
+                .subscribe(System.out::print);
     }
 }

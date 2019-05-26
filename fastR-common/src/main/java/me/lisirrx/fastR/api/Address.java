@@ -1,10 +1,12 @@
 package me.lisirrx.fastR.api;
 
+import java.io.Serializable;
+
 /**
  * @author lihan lisirrx@gmail.com
  * @date 2019/5/18
  */
-public class Address {
+public class Address implements Serializable {
     private String host;
     private int port;
 
@@ -19,5 +21,13 @@ public class Address {
 
     public int getPort() {
         return port;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                '}';
     }
 }

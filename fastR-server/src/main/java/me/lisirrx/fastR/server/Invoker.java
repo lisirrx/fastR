@@ -14,10 +14,13 @@ public class Invoker {
     private Method method;
     private Object service;
 
-    public Publisher<?> invoke(Message message){
-        System.out.print(message);
+    public Publisher<?> invoke(Object data){
+
         try {
-            return (Publisher<?>) method.invoke(service, message.getData());
+            if (method.getParameterCount() == 0){
+                return (Publisher<?>) method.invoke(service);
+            }
+            return (Publisher<?>) method.invoke(service, data);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

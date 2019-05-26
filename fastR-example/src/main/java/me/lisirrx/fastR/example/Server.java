@@ -1,5 +1,10 @@
 package me.lisirrx.fastR.example;
 
+import me.lisirrx.fastR.api.Address;
+import me.lisirrx.fastR.api.register.RegisterService;
+import me.lisirrx.fastR.client.DefaultClientLoadBalanceStrategy;
+import me.lisirrx.fastR.client.RemoteServiceBuilder;
+import me.lisirrx.fastR.client.ServiceDiscovery;
 import me.lisirrx.fastR.serialization.HessianCodec;
 import me.lisirrx.fastR.server.FastRServer;
 import me.lisirrx.fastR.server.ServiceMethod;
@@ -12,46 +17,22 @@ import reactor.core.publisher.Mono;
  */
 public class Server {
 
-
-
     public static void main(String[] args) {
-//        EventLoopGroup eventExecutors =  new NioEventLoopGroup(4);
-//
-//        TcpServer server = TcpServer.create().runOn(eventExecutors).host("localhost").port(7000);
-//        RSocketFactory.receive()
-//                .acceptor(
-//                        (setupPayload, reactiveSocket) ->
-//                                Mono.just(
-//                                        new AbstractRSocket() {
-//
-//                                            @Override
-//                                            public Mono<Payload> requestResponse(Payload p) {
-//                                                System.out.println("+++++" + p.getData().toString());
-//                                                HessianCodec codec = new HessianCodec();
-//
-//                                                Message message = new Message("hello");
-//
-//                                                return Mono.just(DefaultPayload.create(codec.encode(message)));
-//
-////                                                return Mono.just(DefaultPayload.create("hello"));
-//
-//                                            }
-//                                        }))
-//                .transport(TcpServerTransport.create(server))
-//                .start()
-//                .publishOn(Schedulers.elastic())
-//                .block().onClose().block();
-//
-//
-//        System.out.print(123);
+        Address address = new Address("localhost", 9000);
+        Address centerAddress = new Address("localhost", 8000);
 
+        DefaultClientLoadBalanceStrategy defaultClientLoadBalanceStrategy = new DefaultClientLoadBalanceStrategy();
+        ServiceDiscovery serviceDiscovery = new ServiceDiscovery(defaultClientLoadBalanceStrategy);
+        RemoteServiceBuilder.init(serviceDiscovery, new HessianCodec(), centerAddress);
+        RegisterService registerService = RemoteServiceBuilder.initService(RegisterService.class, centerAddress);
 
-        ServiceRegistry registry = new ServiceRegistry();
+        ServiceRegistry registry = new ServiceRegistry(address, false);
+        registry.setRegisterService(registerService);
         registry.register(new TestServiceImpl());
 
 
         new FastRServer.Builder()
-                .address("localhost", 7000)
+                .address(address)
                 .registry(registry)
                 .codec(new HessianCodec())
                 .build()

@@ -1,8 +1,10 @@
 package me.lisirrx.fastR.client;
 
+import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import me.lisirrx.fastR.api.Message;
 import me.lisirrx.fastR.serialization.Codec;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,24 +24,37 @@ public class ClientCaller {
         this.codec = codec;
     }
 
-    public Mono<Message> fireAndForget(Message message){
-        return null;
+    public Mono<Void> fireAndForget(Message message){
+        return socket.flatMap(
+                rSocket ->
+                        rSocket.fireAndForget(codec.encode(message))
+        );
     }
     public Mono<Message> requestAndResponse(Message message){
         return socket.flatMap(
                 rSocket ->
                         rSocket.requestResponse(codec.encode(message))
         )
-                .flatMap(
-                        payload -> Mono.just(codec.decode(payload))
+                .map(
+                        payload -> codec.decode(payload)
                 );
     }
     public Flux<Message> requestStream(Message message){
-        return null;
+        return socket.flux().flatMap(
+                rSocket -> rSocket.requestStream(codec.encode(message))
+        )
+                .map(
+                        payload -> codec.decode(payload)
+                );
     }
 
-    public Flux<Message> requestChannel(Flow.Publisher<Message> message){
-        return null;
+    public Flux<Message> requestChannel(Publisher<Payload> message){
+        return socket.flux().flatMap(
+                rSocket -> rSocket.requestChannel(message)
+        )
+                .map(
+                        payload -> codec.decode(payload)
+                );
     }
 
 

@@ -40,6 +40,11 @@ public class FastRServer {
             return this;
         }
 
+        public Builder address(Address address){
+            this.address = address;
+            return this;
+        }
+
         public Builder codec(Codec codec){
             this.codec = codec;
             return this;
