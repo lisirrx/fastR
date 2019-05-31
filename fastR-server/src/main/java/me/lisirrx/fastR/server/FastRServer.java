@@ -18,14 +18,15 @@ import reactor.core.scheduler.Schedulers;
 public class FastRServer {
     private Mono<CloseableChannel> channel;
 
-
     public FastRServer(Mono<CloseableChannel> channel) {
         this.channel = channel;
     }
 
 
     public void start(){
-        this.channel.publishOn(Schedulers.elastic()).block().onClose().block();
+        new Thread(()->{
+            this.channel.publishOn(Schedulers.newElastic("FastRServer")).block().onClose().block();
+        }).start();
     }
 
     public static class Builder {

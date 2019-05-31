@@ -37,5 +37,7 @@ public class Server {
                 .codec(new HessianCodec())
                 .build()
                 .start();
+
+        System.out.println("hahah");
         }
 }

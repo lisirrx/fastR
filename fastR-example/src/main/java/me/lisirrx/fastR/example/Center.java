@@ -13,7 +13,7 @@ public class Center {
     public static void main(String[] args) {
 
 
-        Address address = new Address("localhost", 8000);
+        Address address = new Address("localhost", 7000);
 
         ServiceRegistry registry = new ServiceRegistry(address, true);
         registry.register(new DefaultDiscoveryService());

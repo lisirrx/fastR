@@ -47,6 +47,7 @@ public class ServiceRegistry {
                                     invoker.setMethod(method);
                                     invoker.setService(serviceImpl);
                                     invokers.put(Identity.generate(clazz, method), invoker);
+                                    logger.info("Register Service" + clazz.getName());
                                     if (!center){
                                         RegisterRequest registerRequest = new RegisterRequest(clazz.getName(), selfAddress);
                                         logger.info(registerService.register(registerRequest).map(RegisterResponse::getMsg).block());

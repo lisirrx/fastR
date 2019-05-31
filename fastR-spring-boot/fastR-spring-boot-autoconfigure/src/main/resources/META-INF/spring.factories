@@ -1,0 +1,5 @@
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  me.lisirrx.fastR.spring.autoconfigure.ServiceProcessBean
+
+org.springframework.context.ApplicationContextInitializer=me.lisirrx.fastR.spring.autoconfigure.ServiceInitializer
