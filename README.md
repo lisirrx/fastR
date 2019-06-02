@@ -1,8 +1,8 @@
-#fastR
+# fastR
 
 本项目为一个简单的基于RSocket的RPC实现
 
-使用方法：引入依赖（还未发布到maven仓库
+1. 使用方法：引入依赖（还未发布到maven仓库
 
 ```xml
  <dependency>
@@ -11,9 +11,9 @@
     <version>1.0-SNAPSHOT</version>
  </dependency>
 ```
+2. 启动center目录下的注册中心。
 
-服务端：
-
+3. 服务端：
 ```java
 @Service
 @FastRSocketService
@@ -27,8 +27,7 @@ public class DemoServiceImpl implements DemoService {
 
 ```
 
-客户端
-
+4. 客户端
 ```java
 @Bean
 public DemoService demoService(){
@@ -36,7 +35,7 @@ public DemoService demoService(){
 }
 ```
 
-客户端调用：
+4. 客户端调用：
 
 ```java
 demoService.demo()
