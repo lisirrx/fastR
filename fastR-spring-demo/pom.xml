@@ -2,25 +2,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>fastR</artifactId>
-        <groupId>me.lisirrx</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>me.lisirrx</groupId>
     <artifactId>fastR-spring-demo</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>fastR-demo-consumer</module>
         <module>fastR-demo-api</module>
+        <module>fastR-demo-provider</module>
     </modules>
+    <version>1.0-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>me.lisirrx</groupId>
                 <artifactId>fastR-spring-boot-starter</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+                <version>2.1.2.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>me.lisirrx</groupId>
+                <artifactId>fastR-demo-api</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>

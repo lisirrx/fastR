@@ -1,5 +1,6 @@
 package me.lisirrx.fastR.demo.api;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -8,4 +9,6 @@ import reactor.core.publisher.Mono;
  */
 public interface DemoService {
     Mono<String> demo();
+
+    Flux<String> demos();
 }

@@ -3,6 +3,9 @@ package me.lisirrx.fastR.server;
 import io.rsocket.*;
 import me.lisirrx.fastR.api.Message;
 import me.lisirrx.fastR.serialization.Codec;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +17,8 @@ public class ServerAcceptor implements SocketAcceptor {
 
     private ServiceRegistry registry;
     private Codec codec;
+
+    private Logger logger = LoggerFactory.getLogger(ServerAcceptor.class);
 
     public ServerAcceptor(ServiceRegistry registry, Codec codec) {
         this.registry = registry;
@@ -29,17 +34,21 @@ public class ServerAcceptor implements SocketAcceptor {
 
     private class ServerRSocket extends AbstractRSocket {
 
-        @Override
-        public Mono<Void> fireAndForget(Payload payload) {
-            Message message = codec.decode(payload);
-            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
-            return Mono.defer(
+        private Mono<Payload> handle(Message message, Invoker invoker){
+            return  Mono.defer(
                     () -> Mono.from(
                             invoker.invoke(message.getData())
                     )
             ).map(rep ->
                     codec.encode(new Message(null, rep))
-            ).then();
+            ).doOnError(throwable -> logger.error(throwable.getMessage()));
+        }
+
+        @Override
+        public Mono<Void> fireAndForget(Payload payload) {
+            Message message = codec.decode(payload);
+            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
+            return handle(message, invoker).then();
         }
 
         @Override
@@ -48,13 +57,7 @@ public class ServerAcceptor implements SocketAcceptor {
             Message message = codec.decode(payload);
             Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
 
-            return Mono.defer(
-                    () -> Mono.from(
-                            invoker.invoke(message.getData())
-                    )
-            ).map(rep ->
-                    codec.encode(new Message(null, rep))
-            );
+            return handle(message, invoker);
         }
 
         @Override
@@ -66,22 +69,18 @@ public class ServerAcceptor implements SocketAcceptor {
 
             ).map(rep ->
                     codec.encode(new Message(null, rep))
-            );
+            ).doOnError(throwable -> logger.error(throwable.getMessage()));
         }
 
-//        @Override
-//        public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-//            Invoker invoker = registry.getInvoker(message.getHeader(Message.IDENTITY));
-//            return Flux.from(payloads)
-//                    .map(payload -> codec.decode(payload))
-//
-//            return Flux.defer(
-//                    ()-> invoker.invoke(message)
-//
-//            ).map(rep->
-//                    codec.encode(new Message(null, rep))
-//            );
-//        }
+        @Override
+        public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+            return Flux.from(payloads)
+                    .map(payload -> codec.decode(payload))
+                    .map(message -> registry.getInvoker(message.getHeader(Message.IDENTITY)).invoke(message.getData()))
+                    .map(req->codec.encode(new Message(null, req)))
+                    .doOnError(throwable -> logger.error(throwable.getMessage()));
+
+        }
 
     }
 }

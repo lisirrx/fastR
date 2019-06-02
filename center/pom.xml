@@ -19,16 +19,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>me.lisirrx</groupId>
-            <artifactId>fastR-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>me.lisirrx</groupId>
-            <artifactId>fastR-server</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
@@ -48,6 +39,11 @@
             <groupId>me.lisirrx</groupId>
             <artifactId>fastR-spring-boot-starter</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.11</version>
         </dependency>
     </dependencies>
 

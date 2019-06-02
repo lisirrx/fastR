@@ -18,8 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lihan lisirrx@gmail.com
  * @date 2019/5/27
  */
-@Component
-@FastRSocketService
+
 public class DefaultDiscoveryService implements DiscoveryService, RegisterService{
 
     private ConcurrentHashMap<String, Set<Address>> services = new ConcurrentHashMap<>();

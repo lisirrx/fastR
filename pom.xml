@@ -14,7 +14,7 @@
         <module>fastR-example</module>
         <module>fastR-client</module>
         <module>fastR-server</module>
-        <module>fastR-spring-demo</module>
+        <module>fastR-spring-boot</module>
     </modules>
 
     <properties>
