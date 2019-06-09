@@ -5,6 +5,8 @@ import me.lisirrx.fastR.api.register.RegisterService;
 import me.lisirrx.fastR.client.DefaultClientLoadBalanceStrategy;
 import me.lisirrx.fastR.client.RemoteServiceBuilder;
 import me.lisirrx.fastR.client.ServiceDiscovery;
+import me.lisirrx.fastR.serialization.Crypt;
+import me.lisirrx.fastR.serialization.CryptFactory;
 import me.lisirrx.fastR.serialization.HessianCodec;
 import me.lisirrx.fastR.server.FastRServer;
 import me.lisirrx.fastR.server.FastRSocketService;
@@ -39,6 +41,12 @@ public class ServiceProcessBean implements ApplicationContextAware {
     @Value("${fastrsocket.center.on:false}")
     private boolean centerOn;
 
+    @Value("${fastrsocket.crypt:DES}")
+    private String crypt;
+
+    @Value("${fastrsocket.key:qldiundf85740i7n}")
+    private String key;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Address centerAddress = new Address(centerHost, centerPort);
@@ -48,6 +56,7 @@ public class ServiceProcessBean implements ApplicationContextAware {
         ServiceRegistry registry = new ServiceRegistry(address, centerOn);
         registry.setRegisterService(registerService);
 
+        Crypt c = CryptFactory.createCrypt(crypt, key);
 
         applicationContext.getBeansWithAnnotation(FastRSocketService.class).forEach((s, o) -> {
             registry.register(o);
@@ -56,7 +65,7 @@ public class ServiceProcessBean implements ApplicationContextAware {
         new FastRServer.Builder()
                 .address(address)
                 .registry(registry)
-                .codec(new HessianCodec())
+                .codec(new HessianCodec(c))
                 .build()
                 .start();
     }

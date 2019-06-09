@@ -8,6 +8,8 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import me.lisirrx.fastR.api.Address;
 import me.lisirrx.fastR.serialization.Codec;
 import me.lisirrx.fastR.serialization.HessianCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -17,14 +19,19 @@ import reactor.core.scheduler.Schedulers;
  */
 public class FastRServer {
     private Mono<CloseableChannel> channel;
+    private Address address;
 
-    public FastRServer(Mono<CloseableChannel> channel) {
+    private Logger logger = LoggerFactory.getLogger(FastRServer.class);
+
+    public FastRServer(Mono<CloseableChannel> channel, Address address) {
         this.channel = channel;
+        this.address = address;
     }
 
 
     public void start(){
         new Thread(()->{
+            logger.info("FastRServer Start at [" + address.getHost() + ":" + address.getPort() + "]");
             this.channel.publishOn(Schedulers.newElastic("FastRServer")).block().onClose().block();
         }).start();
     }
@@ -68,7 +75,8 @@ public class FastRServer {
 
             return new FastRServer(
                     RSocketFactory.receive().acceptor(new ServerAcceptor(this.serviceRegistry, this.codec))
-                            .transport(this.serverTransport).start()
+                            .transport(this.serverTransport).start(),
+                    address
             );
         }
     }

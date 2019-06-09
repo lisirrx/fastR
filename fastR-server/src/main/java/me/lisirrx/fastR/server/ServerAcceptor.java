@@ -40,7 +40,7 @@ public class ServerAcceptor implements SocketAcceptor {
                             invoker.invoke(message.getData())
                     )
             ).map(rep ->
-                    codec.encode(new Message(null, rep))
+                    codec.encode(new Message(rep))
             ).doOnError(throwable -> logger.error(throwable.getMessage()));
         }
 
@@ -68,7 +68,7 @@ public class ServerAcceptor implements SocketAcceptor {
                     () -> invoker.invoke(message.getData())
 
             ).map(rep ->
-                    codec.encode(new Message(null, rep))
+                    codec.encode(new Message(rep))
             ).doOnError(throwable -> logger.error(throwable.getMessage()));
         }
 
@@ -77,7 +77,7 @@ public class ServerAcceptor implements SocketAcceptor {
             return Flux.from(payloads)
                     .map(payload -> codec.decode(payload))
                     .map(message -> registry.getInvoker(message.getHeader(Message.IDENTITY)).invoke(message.getData()))
-                    .map(req->codec.encode(new Message(null, req)))
+                    .map(req->codec.encode(new Message(req)))
                     .doOnError(throwable -> logger.error(throwable.getMessage()));
 
         }

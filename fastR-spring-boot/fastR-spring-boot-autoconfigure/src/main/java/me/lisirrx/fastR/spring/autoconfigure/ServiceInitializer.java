@@ -4,6 +4,9 @@ import me.lisirrx.fastR.api.Address;
 import me.lisirrx.fastR.client.DefaultClientLoadBalanceStrategy;
 import me.lisirrx.fastR.client.RemoteServiceBuilder;
 import me.lisirrx.fastR.client.ServiceDiscovery;
+import me.lisirrx.fastR.serialization.Crypt;
+import me.lisirrx.fastR.serialization.CryptFactory;
+import me.lisirrx.fastR.serialization.DESCrypt;
 import me.lisirrx.fastR.serialization.HessianCodec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,11 +31,16 @@ public class ServiceInitializer implements ApplicationContextInitializer {
     public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
         Integer centerPort = configurableApplicationContext.getEnvironment().getProperty("fastrsocket.center.port", Integer.class, 7000);
         String centerHost = configurableApplicationContext.getEnvironment().getProperty("fastrsocket.center.host", String.class,"127.0.0.1");
+        String crypt = configurableApplicationContext.getEnvironment().getProperty("fastrsocket.crypt", String.class,"DES");
+        String key = configurableApplicationContext.getEnvironment().getProperty("fastrsocket.key", String.class,"qldiundf85740i7n");
 
         Address centerAddress = new Address(centerHost, centerPort);
+        Crypt c = CryptFactory.createCrypt(crypt, key);
 
         DefaultClientLoadBalanceStrategy defaultClientLoadBalanceStrategy = new DefaultClientLoadBalanceStrategy();
         ServiceDiscovery serviceDiscovery = new ServiceDiscovery(defaultClientLoadBalanceStrategy);
-        RemoteServiceBuilder.init(serviceDiscovery, new HessianCodec(), centerAddress);
+        RemoteServiceBuilder.init(serviceDiscovery, new HessianCodec(c), centerAddress);
     }
+
+
 }

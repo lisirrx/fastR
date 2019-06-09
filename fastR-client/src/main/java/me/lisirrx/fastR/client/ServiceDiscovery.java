@@ -52,7 +52,9 @@ public class ServiceDiscovery {
 
         Callable<List<Address>> callable = ()->{
             return discoveryService.discover(new ServiceDiscoveryRequest(serviceInfo.getServiceName()))
-                    .map(ServiceDiscoveryResponse::getAddresses).block();
+                    .map(ServiceDiscoveryResponse::getAddresses)
+                    .doOnError(Throwable::printStackTrace)
+                    .block();
         };
 
         return Mono.justOrEmpty(
